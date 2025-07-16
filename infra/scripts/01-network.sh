@@ -1,11 +1,31 @@
 #!/bin/bash
 
+set -euo pipefail
+
+# Check if RG_NAME is set
+if [ -z "${RG_NAME:-}" ]; then
+    echo "Error: RG_NAME environment variable is not set"
+    exit 1
+fi
+
+# Check if MASTER_COUNT is set
+if [ -z "${MASTER_COUNT:-}" ]; then
+    echo "Error: MASTER_COUNT environment variable is not set"
+    exit 1
+fi
+
+# Validate MASTER_COUNT is a positive integer
+if ! [[ "$MASTER_COUNT" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Error: MASTER_COUNT must be a positive integer"
+    exit 1
+fi
+
 az network vnet create \
     -g $RG_NAME \
     --name kubeadm \
     --address-prefix 192.168.0.0/16 \
     --subnet-name kube \
-    --subnet-prefix 192.168.0.0/16
+    --subnet-prefix 192.168.0.0/24
 
 az network nsg create \
     -g $RG_NAME \
@@ -30,7 +50,7 @@ az network nsg rule create \
     --access allow
 
 az network vnet subnet update \
-    -g kubeadm \
+    -g $RG_NAME \
     -n kube \
     --vnet-name kubeadm \
     --network-security-group kubeadm
@@ -75,16 +95,6 @@ az network lb rule create \
     --disable-outbound-snat true \
     --idle-timeout 15 \
     --enable-tcp-reset true
-
-
-for i in $(seq 1 $MASTER_COUNT); do
-    az network nic ip-config address-pool add \
-        --address-pool masternodes \
-        --ip-config-name ipconfigkube-master-$i \
-        --nic-name kube-master-${i}VMNic \
-        --resource-group $RG_NAME \
-        --lb-name kubemaster
-done
 
 # Create NAT gateway public IP
 az network public-ip create \

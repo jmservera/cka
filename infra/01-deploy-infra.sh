@@ -10,8 +10,8 @@ fi
 
 # Call the network setup script
 echo "Setting up network infrastructure..."
-./01-network.sh
+source ./scripts/01-network.sh
 
 # Call the VMs setup script
 echo "Setting up virtual machines..."
-./02-vms.sh
+source ./scripts/02-vms.sh
