@@ -116,3 +116,9 @@ az network vnet subnet update \
     --vnet-name kubeadm \
     --name kubeadm-gw \
     --nat-gateway natgateway
+
+az network vnet subnet update \
+    --resource-group $RG_NAME \
+    --vnet-name kubeadm \
+    --name kube \
+    --nat-gateway natgateway

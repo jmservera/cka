@@ -3,6 +3,11 @@
 echo "Waiting for master VMs to be created..."
 for i in $(seq 1 $MASTER_COUNT); do
     az vm wait --created --name kube-master-$i -g $RG_NAME
+
+    az network nic update \
+        --resource-group $RG_NAME \
+        --name kube-master-${i}VMNic \
+        --ip-forwarding true
     # add 10 private IPs to each master VM
     echo "Adding additional NICs to kube-master-$i..."
     for j in $(seq 1 10); do
@@ -22,6 +27,13 @@ echo "All master VMs created successfully"
 echo "Waiting for worker VMs to be created..."
 for i in $(seq 1 $WORKER_COUNT); do
     az vm wait --created --name kube-worker-$i -g $RG_NAME
+
+    # update nic for enabling ip-fowarding
+    az network nic update \
+        --resource-group $RG_NAME \
+        --name kube-worker-${i}VMNic \
+        --ip-forwarding true        
+
     # add 10 private IPs to each node VM
     echo "Adding additional NICs to kube-worker-$i..."
     for j in $(seq 1 10); do
