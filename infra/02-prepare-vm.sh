@@ -102,7 +102,7 @@ sudo apt install iprange
 
 # sudo iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.1.0/24 -j MASQUERADE
 
-sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d 192.168.0.0/24 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d 10.224.0.0/16 -j MASQUERADE
 	
 # echo "KUBELET_EXTRA_ARGS=" | sudo tee /etc/default/kubelet > /dev/null
 

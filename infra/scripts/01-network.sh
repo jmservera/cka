@@ -23,9 +23,9 @@ fi
 az network vnet create \
     -g $RG_NAME \
     --name kubeadm \
-    --address-prefix 192.168.0.0/16 \
+    --address-prefix 10.224.0.0/12 \
     --subnet-name kube \
-    --subnet-prefix 192.168.0.0/24
+    --subnet-prefix 192.224.0.0/16
 
 az network nsg create \
     -g $RG_NAME \
@@ -54,12 +54,6 @@ az network vnet subnet update \
     -n kube \
     --vnet-name kubeadm \
     --network-security-group kubeadm
-
-az network vnet subnet create \
-        --resource-group $RG_NAME \
-        --vnet-name kubeadm \
-        --name kubeadm-gw \
-        --address-prefix 192.168.1.0/24
 
 az network public-ip create \
     --resource-group $RG_NAME \
@@ -96,29 +90,43 @@ az network lb rule create \
     --idle-timeout 15 \
     --enable-tcp-reset true
 
-# Create NAT gateway public IP
-az network public-ip create \
+# create outbound rule for NAT
+az network lb outbound-rule create \
     --resource-group $RG_NAME \
-    --name natgateway-ip \
-    --sku Standard \
-    --allocation-method Static
+    --lb-name kubemaster \
+    --name kubemaster-outbound \
+    --protocol All \
+    --frontend-ip-name controlplaneip \
+    --idle-timeout 15 \
+    --enable-tcp-reset true \
+    --backend-pool-name masternodes \
+    --allocated-outbound-ports 1000 \
+    --idle-timeout 10 \
+    --snat-ports 1000
 
-# Create NAT gateway
-az network nat gateway create \
-    --resource-group $RG_NAME \
-    --name natgateway \
-    --public-ip-addresses natgateway-ip \
-    --idle-timeout 10
+# # Create NAT gateway public IP //TODO use existing LB
+# az network public-ip create \
+#     --resource-group $RG_NAME \
+#     --name natgateway-ip \
+#     --sku Standard \
+#     --allocation-method Static
 
-# Associate NAT gateway with subnet (assuming default subnet name)
-az network vnet subnet update \
-    --resource-group $RG_NAME \
-    --vnet-name kubeadm \
-    --name kubeadm-gw \
-    --nat-gateway natgateway
+# # Create NAT gateway
+# az network nat gateway create \
+#     --resource-group $RG_NAME \
+#     --name natgateway \
+#     --public-ip-addresses natgateway-ip \
+#     --idle-timeout 10
 
-az network vnet subnet update \
-    --resource-group $RG_NAME \
-    --vnet-name kubeadm \
-    --name kube \
-    --nat-gateway natgateway
+# # Associate NAT gateway with subnet (assuming default subnet name)
+# az network vnet subnet update \
+#     --resource-group $RG_NAME \
+#     --vnet-name kubeadm \
+#     --name kubeadm-gw \
+#     --nat-gateway natgateway
+
+# az network vnet subnet update \
+#     --resource-group $RG_NAME \
+#     --vnet-name kubeadm \
+#     --name kube \
+#     --nat-gateway natgateway

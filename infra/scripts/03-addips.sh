@@ -39,9 +39,9 @@ for i in $(seq 1 $WORKER_COUNT); do
     for j in $(seq 1 10); do
         echo -n "$j"
         az network nic ip-config create \
-            --name ipconfigkube-master-$i-$j \
+            --name ipconfigkube-worker-$i-$j \
             --vnet-name kubeadm \
-            --nic-name kube-master-${i}VMNic \
+            --nic-name kube-worker-${i}VMNic \
             --resource-group $RG_NAME \
             --subnet kube \
             --no-wait

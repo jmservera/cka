@@ -9,6 +9,7 @@ for i in $(seq 1 $MASTER_COUNT); do
     --admin-username azureuser \
     --ssh-key-value @~/.ssh/id_rsa.pub \
     --size $VMSIZE \
+    --public-ip-address "" \
     --nsg kubeadm --no-wait
 done
 
@@ -19,6 +20,7 @@ for i in $(seq 1 $WORKER_COUNT); do
     --admin-username azureuser \
     --ssh-key-value @~/.ssh/id_rsa.pub \
     --size $VMSIZE \
+    --public-ip-address "" \
     --nsg kubeadm --no-wait
 done
 
