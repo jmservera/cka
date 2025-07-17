@@ -39,6 +39,29 @@ wget https://github.com/containernetworking/plugins/releases/download/v1.7.1/cni
 sudo mkdir -p /opt/cni/bin
 sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.7.1.tgz
 
+# Configure Azure CNI plugin with default values
+cat <<EOF | sudo tee /etc/cni/net.d/10-azure.conflist
+{
+   "cniVersion":"0.3.0",
+   "name":"azure",
+   "plugins":[
+      {
+         "type":"azure-vnet",
+         "ipam":{
+            "type":"azure-vnet-ipam"
+         }
+      },
+      {
+         "type":"portmap",
+         "capabilities":{
+            "portMappings":true
+         },
+         "snat":true
+      }
+   ]
+}
+EOF
+
 sudo systemctl enable --now kubelet
 
 # sysctl params required by setup, params persist across reboots
@@ -46,6 +69,7 @@ cat <<EOF | sudo tee /etc/modules-load.d/containerd.conf
 overlay
 br_netfilter
 EOF
+
 
 sudo modprobe overlay
 sudo modprobe br_netfilter
