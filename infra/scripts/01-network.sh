@@ -25,7 +25,7 @@ az network vnet create \
     --name kubeadm \
     --address-prefix 10.224.0.0/12 \
     --subnet-name kube \
-    --subnet-prefix 192.224.0.0/16
+    --subnet-prefix 10.224.0.0/16
 
 az network nsg create \
     -g $RG_NAME \
