@@ -62,3 +62,30 @@ EOF
 sudo modprobe br_netfilter
 
 sudo sysctl --system
+
+
+# Install Azure CNI plugin
+git clone https://github.com/Azure/azure-container-networking && sudo ./azure-container-networking/scripts/install-cni-plugin.sh v1.6.30
+
+sudo apt install iprange
+
+# sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d 10.0.0.0/8 -j MASQUERADE
+	
+sudo iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.1.0/24 -j MASQUERADE
+
+# echo "KUBELET_EXTRA_ARGS=" | sudo tee /etc/default/kubelet > /dev/null
+
+# sudo systemctl daemon-reload
+# sudo systemctl restart kubelet
+
+# --- first 
+sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --upload-certs
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+kubectl apply -f https://raw.githubusercontent.com/Azure/azure-container-networking/master/npm/azure-npm.yaml
+
+
+# --- now join

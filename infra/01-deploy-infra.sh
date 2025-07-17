@@ -8,10 +8,22 @@ else
     exit 1
 fi
 
-# Call the network setup script
-echo "Setting up network infrastructure..."
-source ./scripts/01-network.sh
+STEP=$1
 
-# Call the VMs setup script
-echo "Setting up virtual machines..."
-source ./scripts/02-vms.sh
+if [ -z "$STEP" ]; then    
+    # Call the network setup script
+    echo "Setting up network infrastructure..."
+    source ./scripts/01-network.sh    
+    STEP=1
+fi
+
+if [ "$STEP" -le 2 ]; then
+    # Call the VMs setup script
+    echo "Setting up virtual machines..."
+    source ./scripts/02-vms.sh
+fi
+
+# Call the additional NICs setup script
+echo "Setting up additional NICs..."
+source ./scripts/03-addips.sh
+

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: worker01-pv
+  name: kube-worker-1-pv
 spec:
   capacity:
     storage: 1Gi
@@ -19,12 +19,12 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - worker01
+                - kube-worker-1
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: worker02-pv
+  name: kube-worker-2-pv
 spec:
   capacity:
     storage: 1Gi
@@ -42,12 +42,12 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - worker02
+                - kube-worker-2
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: worker02-pv-2
+  name: kube-worker-2-pv-2
 spec:
   capacity:
     storage: 1Gi
@@ -65,12 +65,12 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - worker02                
+                - kube-worker-2                
 ---
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: worker01-pv-2
+  name: kube-worker-1-pv-2
 spec:
   capacity:
     storage: 1Gi
@@ -88,4 +88,4 @@ spec:
             - key: kubernetes.io/hostname
               operator: In
               values:
-                - worker01              
+                - kube-worker-1              
