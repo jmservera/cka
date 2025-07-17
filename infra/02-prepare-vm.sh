@@ -1,4 +1,7 @@
 #!/bin/bash
+set -euo pipefail
+
+cd /tmp
 
 sudo apt-get update
 # apt-transport-https may be a dummy package; if so, you can skip that package
