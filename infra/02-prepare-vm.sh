@@ -99,4 +99,4 @@ sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m ad
 
 echo "Run the following command to create the cluster from master 1:"
 echo "      sudo kubeadm init --control-plane-endpoint ${LB_NAME}.$LOCATION.cloudapp.azure.com:6443 --upload-certs"
-echo "or use the join command.
+echo "or use the join command."
