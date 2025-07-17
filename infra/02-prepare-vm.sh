@@ -1,6 +1,13 @@
 #!/bin/bash
 set -euo pipefail
 
+if [ -f .env ]; then
+    source .env
+else
+    echo "Error: .env file not found"
+    exit 1
+fi
+
 cd /tmp
 
 sudo apt-get update
@@ -82,13 +89,17 @@ sudo iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.1.0
 # sudo systemctl restart kubelet
 
 # --- first 
-sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --upload-certs
+# sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --upload-certs
 
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
+# mkdir -p $HOME/.kube
+# sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+# sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
-kubectl apply -f https://raw.githubusercontent.com/Azure/azure-container-networking/master/npm/azure-npm.yaml
+# kubectl apply -f https://raw.githubusercontent.com/Azure/azure-container-networking/master/npm/azure-npm.yaml
 
 
 # --- now join
+
+echo "Run the following command to create the cluster from master 1:"
+echo "      sudo kubeadm init --control-plane-endpoint ${LB_NAME}.$LOCATION.cloudapp.azure.com:6443 --upload-certs"
+echo "or use the join command.

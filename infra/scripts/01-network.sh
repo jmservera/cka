@@ -65,7 +65,7 @@ az network public-ip create \
     --resource-group $RG_NAME \
     --name controlplaneip \
     --sku Standard \
-    --dns-name vanilla$RG_NAME
+    --dns-name $LB_NAME
 
  az network lb create \
     --resource-group $RG_NAME \
