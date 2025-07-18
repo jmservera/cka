@@ -29,12 +29,6 @@ echo "All master VMs created successfully"
 echo "Update vNICs for worker VMs..."
 for i in $(seq 1 $WORKER_COUNT); do
 
-    # update nic for enabling ip-fowarding
-    az network nic update \
-        --resource-group $RG_NAME \
-        --name kube-worker-${i}VMNic \
-        --ip-forwarding true        
-
     # add 10 private IPs to each node VM
     echo "Adding additional NICs to kube-worker-$i..."
     for j in $(seq 1 10); do
@@ -47,6 +41,12 @@ for i in $(seq 1 $WORKER_COUNT); do
             --subnet kube \
             --no-wait
     done
+
+        # update nic for enabling ip-fowarding
+    az network nic update \
+        --resource-group $RG_NAME \
+        --name kube-worker-${i}VMNic \
+        --ip-forwarding true  
     echo " done"
 done
 echo "All worker VMs created successfully"
