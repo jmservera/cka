@@ -61,12 +61,12 @@ for i in $(seq 1 $MASTER_COUNT); do
         --lb-name $LB_NAME 
 done
 
-echo "Adding worker VMs to the load balancer..."
-for i in $(seq 1 $WORKER_COUNT); do
-    az network nic ip-config address-pool add \
-        --address-pool workernodes \
-        --ip-config-name ipconfigkube-worker-$i \
-        --nic-name kube-worker-${i}VMNic \
-        --resource-group $RG_NAME \
-        --lb-name $LB_NAME 
-done
+# echo "Adding worker VMs to the load balancer..."
+# for i in $(seq 1 $WORKER_COUNT); do
+#     az network nic ip-config address-pool add \
+#         --address-pool workernodes \
+#         --ip-config-name ipconfigkube-worker-$i \
+#         --nic-name kube-worker-${i}VMNic \
+#         --resource-group $RG_NAME \
+#         --lb-name $LB_NAME 
+# done
