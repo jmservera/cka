@@ -104,7 +104,7 @@ sudo apt install iprange
 sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d $SUBNET_PREFIX -j MASQUERADE
 	
 # --- first 
-# sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --pod-network-cidr  10.224.0.0/24 --upload-certs
+# sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --pod-network-cidr  10.224.0.0/16 --upload-certs
 
 # mkdir -p $HOME/.kube
 # sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
