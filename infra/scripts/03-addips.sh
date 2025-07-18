@@ -1,9 +1,11 @@
 #!/bin/bash
 
-echo "Waiting for master VMs to be created..."
-for i in $(seq 1 $MASTER_COUNT); do
-    az vm wait --created --name kube-master-$i -g $RG_NAME
+LB_NAME=${LB_NAME:-"kubeadm-lb"}
+MASTER_COUNT=${MASTER_COUNT:-3}
+WORKER_COUNT=${WORKER_COUNT:-2}
 
+echo "Update vNICs for master VMs..."
+for i in $(seq 1 $MASTER_COUNT); do
     az network nic update \
         --resource-group $RG_NAME \
         --name kube-master-${i}VMNic \
@@ -24,9 +26,8 @@ for i in $(seq 1 $MASTER_COUNT); do
 done
 echo "All master VMs created successfully"
 
-echo "Waiting for worker VMs to be created..."
+echo "Update vNICs for worker VMs..."
 for i in $(seq 1 $WORKER_COUNT); do
-    az vm wait --created --name kube-worker-$i -g $RG_NAME
 
     # update nic for enabling ip-fowarding
     az network nic update \
@@ -50,25 +51,22 @@ for i in $(seq 1 $WORKER_COUNT); do
 done
 echo "All worker VMs created successfully"
 
-
-echo "Creating and assigning public IP to kube-master-1..."
-az network public-ip create \
-    --name kube-master-1-pip \
-    --resource-group $RG_NAME \
-    --allocation-method Static \
-    --sku Standard
-
-az network nic ip-config update \
-    --name ipconfigkube-master-1 \
-    --nic-name kube-master-1VMNic \
-    --resource-group $RG_NAME \
-    --public-ip-address kube-master-1-pip
-
+echo "Adding master VMs to the load balancer..."
 for i in $(seq 1 $MASTER_COUNT); do
     az network nic ip-config address-pool add \
         --address-pool masternodes \
         --ip-config-name ipconfigkube-master-$i \
         --nic-name kube-master-${i}VMNic \
         --resource-group $RG_NAME \
-        --lb-name kubemaster
+        --lb-name $LB_NAME 
+done
+
+echo "Adding worker VMs to the load balancer..."
+for i in $(seq 1 $WORKER_COUNT); do
+    az network nic ip-config address-pool add \
+        --address-pool workernodes \
+        --ip-config-name ipconfigkube-worker-$i \
+        --nic-name kube-worker-${i}VMNic \
+        --resource-group $RG_NAME \
+        --lb-name $LB_NAME 
 done

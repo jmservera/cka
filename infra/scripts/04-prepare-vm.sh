@@ -3,10 +3,12 @@ set -euo pipefail
 
 if [ -f .env ]; then
     source .env
-else
-    echo "Error: .env file not found"
-    exit 1
+# else
+#     echo "Error: .env file not found"
+#     exit 1
 fi
+
+SUBNET_PREFIX=${SUBNET_PREFIX:-"10.224.0.0/16"}
 
 cd /tmp
 
@@ -100,15 +102,8 @@ git clone https://github.com/Azure/azure-container-networking && sudo ./azure-co
 
 sudo apt install iprange
 
-# sudo iptables -t nat -A POSTROUTING -m addrtype ! --dst-type local ! -d 10.0.1.0/24 -j MASQUERADE
-
-sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d 10.224.0.0/16 -j MASQUERADE
+sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m addrtype ! --dst-type local ! -d $SUBNET_PREFIX -j MASQUERADE
 	
-# echo "KUBELET_EXTRA_ARGS=" | sudo tee /etc/default/kubelet > /dev/null
-
-# sudo systemctl daemon-reload
-# sudo systemctl restart kubelet
-
 # --- first 
 # sudo kubeadm init --control-plane-endpoint vanillacka.swedencentral.cloudapp.azure.com:6443 --pod-network-cidr  192.168.0.0/24 --upload-certs
 
@@ -121,6 +116,6 @@ sudo iptables -t nat -A POSTROUTING -m iprange ! --dst-range 168.63.129.16 -m ad
 
 # --- now join
 
-echo "Run the following command to create the cluster from master 1:"
-echo "      sudo kubeadm init --control-plane-endpoint ${LB_NAME}.$LOCATION.cloudapp.azure.com:6443 --upload-certs"
-echo "or use the join command."
+# echo "Run the following command to create the cluster from master 1:"
+# echo "      sudo kubeadm init --control-plane-endpoint ${LB_NAME}.$LOCATION.cloudapp.azure.com:6443 --upload-certs"
+# echo "or use the join command."

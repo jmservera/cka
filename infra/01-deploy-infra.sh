@@ -1,5 +1,11 @@
 #!/bin/bash
 
+LB_NAME=${LB_NAME:-"kubeadm-lb"}
+MASTER_COUNT=${MASTER_COUNT:-3}
+WORKER_COUNT=${WORKER_COUNT:-2}
+ADDRESS_PREFIX=${ADDRESS_PREFIX:-"10.224.0.0/12"}
+SUBNET_PREFIX=${SUBNET_PREFIX:-"10.224.0.0/16"}
+
 # Load environment variables from .env file
 if [ -f .env ]; then
     source .env
