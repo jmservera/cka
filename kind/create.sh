@@ -4,6 +4,7 @@ URL=${URL:-"locahost"}
 LOCAL_IP_ADDRESS=${LOCAL_IP_ADDRESS:-"10.0.0.4"}
 SECONDARY_IP_ADDRESS=${SECONDARY_IP_ADDRESS:-"10.0.1.4"}
 DEBIAN_FRONTEND=noninteractive
+TOKEN=${TOKEN:-$(uuidgen)}
 
 prepare_install(){
     sudo apt-get update
@@ -127,6 +128,25 @@ nodes:
 EOF
 }
 
+run_vscode(){
+  sudo tee /usr/lib/systemd/system/code-serve-web@$USER.service <<EOF
+[Unit]
+Description=vscode-serve-web
+After=network.target
+
+[Service]
+Type=exec
+ExecStart=/usr/bin/code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $TOKEN --log trace
+Restart=always
+User=%i
+
+[Install]
+WantedBy=default.target
+EOF
+  sudo systemctl enable --now code-serve-web@$USER
+  # code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $(uuidgen) --log trace 2>&1 & nohup
+}
+
 create_ingress(){
     echo "Creating ingress listening on ${SECONDARY_IP_ADDRESS}"
     kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
@@ -140,4 +160,5 @@ install_caddy
 install_kubectl
 install_helm
 run_kind
+run_vscode
 create_ingress
