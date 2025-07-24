@@ -14,6 +14,7 @@ prepare_install(){
 install_code_server(){
     echo "Installing code server"
     curl -fsSL https://code-server.dev/install.sh | sh
+    sudo systemctl enable --now code-server@$USER
 }
 
 install_docker(){
@@ -29,7 +30,9 @@ install_docker(){
     sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     sudo apt-get update
 
-     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
+    sudo usermod -aG docker $USER
+    sudo su - $USER
 }
 
 install_kind(){
@@ -40,16 +43,27 @@ install_kind(){
 }
 
 install_caddy(){
+    echo "Creating Caddy config"
+    echo -e "$URL {\n\tbind ${LOCAL_IP_ADDRESS}\n\treverse_proxy 127.0.0.1:8080\n}" | sudo tee /etc/caddy/Caddyfile
+
     echo "Installing Caddy on ${LOCAL_IP_ADDRESS} for https://${URL}"
+
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     chmod o+r /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update
     sudo apt install caddy -y
+}
 
-    echo "Creating Caddy config"
-    echo -e "$URL {\n\tbind ${LOCAL_IP_ADDRESS}\n\treverse_proxy 127.0.0.1:8080\n}" | sudo tee /etc/caddy/Caddyfile
+install_kubectl(){
+  curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+  chmod +x kubectl
+  sudo mv kubectl /usr/local/bin/
+}
+
+install_helm(){
+  curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 }
 
 run_kind(){
@@ -98,5 +112,7 @@ install_code_server
 install_docker
 install_kind
 install_caddy
+install_kubectl
+install_helm
 run_kind
 create_ingress
