@@ -13,12 +13,6 @@ prepare_install(){
 }
 
 install_code_server(){
-    # echo "Installing code server"
-    # curl -fsSL https://code-server.dev/install.sh | sh
-    # sudo systemctl enable --now code-server@$USER
-
-    # https://dev.to/buttonfreak/vscode-server-on-azure-ubuntu-vm-a-step-by-step-guide-38h5#:~:text=In%20this%20article%20I%27ll%20explain%20step-by-step%20on%20how,your%20employer.%20What%20to%20expect%20from%20this%20guide%3F
-    
     echo "Installing code server"
     echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
@@ -135,6 +129,7 @@ Description=vscode-serve-web
 After=network.target
 
 [Service]
+WorkingDirectory=/home/$USER
 Type=exec
 ExecStart=/usr/bin/code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $TOKEN --log trace
 Restart=always
