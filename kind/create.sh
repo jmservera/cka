@@ -2,6 +2,7 @@
 
 URL=${URL:-"locahost"}
 LOCAL_IP_ADDRESS=${LOCAL_IP_ADDRESS:-"10.0.0.4"}
+SECONDARY_IP_ADDRESS=${SECONDARY_IP_ADDRESS:-"10.0.1.4"}
 DEBIAN_FRONTEND=noninteractive
 
 prepare_install(){
@@ -10,7 +11,13 @@ prepare_install(){
     sudo install -m 0755 -d /etc/apt/keyrings
 }
 
+install_code_server(){
+    echo "Installing code server"
+    curl -fsSL https://code-server.dev/install.sh | sh
+}
+
 install_docker(){
+    echo "Installing docker"
     # Add Docker's official GPG key:
     sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
     sudo chmod a+r /etc/apt/keyrings/docker.asc
@@ -33,7 +40,7 @@ install_kind(){
 }
 
 install_caddy(){
-    echo "Installing Caddy"
+    echo "Installing Caddy on ${LOCAL_IP_ADDRESS} for https://${URL}"
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
@@ -46,13 +53,50 @@ install_caddy(){
 }
 
 run_kind(){
-    echo "Running Kind"
-    docker network create --gateway 172.16.0.1 --subnet=172.16.0.0/16 secondkind
-    KIND_EXPERIMENTAL_DOCKER_NETWORK=secondkind kind create cluster --name "secondkind" --config nginx-config.yaml -v 10
+    echo "Running Kind on ${SECONDARY_IP_ADDRESS}"
+    docker network create --gateway 172.16.0.1 --subnet=172.16.0.0/16 secondkind     
+    cat <<EOF | KIND_EXPERIMENTAL_DOCKER_NETWORK=secondkind kind create cluster --name "secondkind" --config=-
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+networking:
+  # WARNING: It is _strongly_ recommended that you keep this the default
+  # (127.0.0.1) for security reasons. However it is possible to change this.
+  apiServerAddress: "${SECONDARY_IP_ADDRESS}"
+nodes:
+- role: control-plane
+  extraPortMappings:
+  - containerPort: 80
+    hostPort: 80
+    protocol: TCP
+    listenAddress: "${SECONDARY_IP_ADDRESS}"
+  - containerPort: 443
+    hostPort: 443
+    protocol: TCP
+    listenAddress: "${SECONDARY_IP_ADDRESS}"
+- role: worker
+  extraMounts:
+  - hostPath: /var/lib/kind/worker1
+    containerPath: /var/lib/k8s
+- role: worker
+  extraMounts:
+  - hostPath: /var/lib/kind/worker1
+    containerPath: /var/lib/k8s
+- role: worker
+  extraMounts:
+  - hostPath: /var/lib/kind/worker1
+    containerPath: /var/lib/k8s
+EOF
+}
+
+create_ingress(){
+    echo "Creating ingress listening on ${SECONDARY_IP_ADDRESS}"
+    kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
 }
 
 prepare_install
+install_code_server
 install_docker
 install_kind
 install_caddy
 run_kind
+create_ingress
