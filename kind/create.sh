@@ -76,6 +76,8 @@ networking:
   # WARNING: It is _strongly_ recommended that you keep this the default
   # (127.0.0.1) for security reasons. However it is possible to change this.
   apiServerAddress: "${SECONDARY_IP_ADDRESS}"
+  podSubnet: "10.244.0.0/16"
+  serviceSubnet: "10.96.0.0/12"
 nodes:
 - role: control-plane
   extraPortMappings:
