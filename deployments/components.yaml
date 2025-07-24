@@ -131,7 +131,6 @@ spec:
       labels:
         k8s-app: metrics-server
     spec:
-      nodeName: master
       containers:
       - args:
         - --cert-dir=/tmp
