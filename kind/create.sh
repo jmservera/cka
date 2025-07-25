@@ -49,8 +49,9 @@ install_docker(){
     sudo apt-get update
 
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
-    sudo usermod -aG docker $USER
-    sudo su - $USER
+    sudo groupadd docker
+    sudo gpasswd -a $USER docker
+    newgrp docker
 }
 
 install_kind(){
@@ -72,6 +73,8 @@ install_caddy(){
     chmod o+r /etc/apt/sources.list.d/caddy-stable.list
     sudo apt update
     sudo apt install caddy -y
+    sudo systemctl reload caddy
+    sudo systemctl restart caddy
 }
 
 install_kubectl(){
