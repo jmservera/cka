@@ -14,7 +14,9 @@ param publicKey string
 param location string
 @secure()
 param vscodeServerToken string
-
+param vscodeDomainNameLabel string = 'vscode'
+param clusterDomainNameLabel string = 'cluster'
+param vmSize string = 'Standard_D8as_v5'
 // Optional parameters to override the default azd resource naming conventions.
 // Add the following to main.parameters.json to provide values:
 // "resourceGroupName": {
@@ -63,6 +65,9 @@ module resources './resources.bicep' = {
     resourceToken: resourceToken
     publicKey: publicKey
     vscodeServerToken: vscodeServerToken
+    vscodeDomainNameLabel: vscodeDomainNameLabel
+    clusterDomainNameLabel: clusterDomainNameLabel
+    vmSize: vmSize
     tags: tags
   }
 }

@@ -13,6 +13,12 @@
     },
     "vscodeServerToken": {
       "value": "${VSCODE_SERVER_TOKEN}"
+    },
+    "vscodeDomainNameLabel": {
+      "value": "${VSCODE_DOMAIN_NAME_LABEL}"
+    },
+    "clusterDomainNameLabel": {
+      "value": "${CLUSTER_DOMAIN_NAME_LABEL}"
     }
   }
 }
