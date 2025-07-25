@@ -2,11 +2,11 @@
 
 name: azd-starter
 hooks:
-  preup:
+  preprovision:
     run: ./scripts/prepare.sh
     interactive: true
     shell: sh
-  postup:
+  postprovision:
     run: ./scripts/postup.sh
     interactive: true
     shell: sh
