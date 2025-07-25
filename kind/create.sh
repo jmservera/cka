@@ -151,8 +151,7 @@ EOF
 config_user(){
     echo "Configuring user ${USERNAME}"
     sudo usermod -aG docker $USERNAME
-    sudo su - $USERNAME
-    kind export kubeconfig --name secondkind
+    sudo su - $USERNAME kind export kubeconfig --name secondkind
 }
 
 create_ingress(){
