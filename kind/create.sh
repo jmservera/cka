@@ -1,10 +1,11 @@
 #!/bin/bash
 
-URL=${URL:-"locahost"}
+URL=${URL:-"locaLhost"}
 LOCAL_IP_ADDRESS=${LOCAL_IP_ADDRESS:-"10.0.0.4"}
 SECONDARY_IP_ADDRESS=${SECONDARY_IP_ADDRESS:-"10.0.1.4"}
 DEBIAN_FRONTEND=noninteractive
 TOKEN=${TOKEN:-$(uuidgen)}
+USERNAME=${USERNAME:-$USER}
 
 prepare_install(){
     sudo apt-get update
@@ -50,7 +51,7 @@ install_docker(){
 
     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin -y
     sudo groupadd docker
-    sudo gpasswd -a $USER docker
+    sudo gpasswd -a $USERNAME docker
     newgrp docker
 }
 
@@ -127,13 +128,13 @@ EOF
 }
 
 run_vscode(){
-  sudo tee /usr/lib/systemd/system/code-serve-web@$USER.service <<EOF
+  sudo tee /usr/lib/systemd/system/code-serve-web@$USERNAME.service <<EOF
 [Unit]
 Description=vscode-serve-web
 After=network.target
 
 [Service]
-WorkingDirectory=/home/$USER
+WorkingDirectory=/home/$USERNAME
 Type=exec
 ExecStart=/usr/bin/code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $TOKEN --log trace
 Restart=always
@@ -142,7 +143,7 @@ User=%i
 [Install]
 WantedBy=default.target
 EOF
-  sudo systemctl enable --now code-serve-web@$USER
+  sudo systemctl enable --now code-serve-web@$USERNAME
   # code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $(uuidgen) --log trace 2>&1 & nohup
 }
 

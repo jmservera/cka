@@ -102,6 +102,7 @@ resource nsg_vscode_resource 'Microsoft.Network/networkSecurityGroups@2024-07-01
       }
     ]
   }
+  tags: tags
 }
 
 resource nsg_cluster_resource 'Microsoft.Network/networkSecurityGroups@2024-07-01' = {
@@ -139,6 +140,7 @@ resource nsg_cluster_resource 'Microsoft.Network/networkSecurityGroups@2024-07-0
       }
     ]
   }
+  tags: tags
 }
 
 resource vnet_resource 'Microsoft.Network/virtualNetworks@2024-07-01' = {
@@ -169,6 +171,7 @@ resource vnet_resource 'Microsoft.Network/virtualNetworks@2024-07-01' = {
       }
     ]
   }
+  tags: tags
 }
 
 resource primary_nic_resource 'Microsoft.Network/networkInterfaces@2024-07-01' = {
@@ -200,6 +203,7 @@ resource primary_nic_resource 'Microsoft.Network/networkInterfaces@2024-07-01' =
       id: nsg_vscode_resource.id
     }
   }
+  tags: tags
 }
 
 resource secondary_nic_resource 'Microsoft.Network/networkInterfaces@2024-07-01' = {
@@ -231,6 +235,7 @@ resource secondary_nic_resource 'Microsoft.Network/networkInterfaces@2024-07-01'
       id: nsg_vscode_resource.id
     }
   }
+  tags: tags
 }
 
 resource vm_resource 'Microsoft.Compute/virtualMachines@2024-11-01' = {
@@ -296,6 +301,7 @@ resource vm_resource 'Microsoft.Compute/virtualMachines@2024-11-01' = {
       }
     }
   }
+  tags: tags
 }
 
 resource deploymentscript 'Microsoft.Compute/virtualMachines/extensions@2024-07-01' = {
@@ -313,7 +319,7 @@ resource deploymentscript 'Microsoft.Compute/virtualMachines/extensions@2024-07-
       ]
     }
     protectedSettings: {
-      commandToExecute: 'TOKEN="${vscodeServerToken}" URL="${pip_vscode_resource.properties.dnsSettings.fqdn}" LOCAL_IP_ADDRESS="${primary_nic_resource.properties.ipConfigurations[0].properties.privateIPAddress}" SECONDARY_IP_ADDRESS="${secondary_nic_resource.properties.ipConfigurations[0].properties.privateIPAddress}" bash create.sh'
+      commandToExecute: 'USERNAME=${adminUsername} TOKEN="${vscodeServerToken}" URL="${pip_vscode_resource.properties.dnsSettings.fqdn}" LOCAL_IP_ADDRESS="${primary_nic_resource.properties.ipConfigurations[0].properties.privateIPAddress}" SECONDARY_IP_ADDRESS="${secondary_nic_resource.properties.ipConfigurations[0].properties.privateIPAddress}" bash create.sh'
     }
   }
 }
