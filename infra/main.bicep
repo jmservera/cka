@@ -14,8 +14,8 @@ param publicKey string
 param location string
 @secure()
 param vscodeServerToken string
-param vscodeDomainNameLabel string = 'vscode'
-param clusterDomainNameLabel string = 'cluster'
+param vscodeDomainNameLabel string
+param clusterDomainNameLabel string
 param vmSize string = 'Standard_D8as_v5'
 // Optional parameters to override the default azd resource naming conventions.
 // Add the following to main.parameters.json to provide values:
