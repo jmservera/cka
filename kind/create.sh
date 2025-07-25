@@ -14,6 +14,7 @@ prepare_install(){
 }
 
 install_code_server(){
+
     echo "Installing code server"
     echo fs.inotify.max_user_watches=524288 | sudo tee -a /etc/sysctl.conf && sudo sysctl -p
 
@@ -166,14 +167,14 @@ clone_repo(){
 }
 
 prepare_install
-install_code_server
-install_docker
-install_kind
-install_caddy
-install_kubectl
-install_helm
-run_kind
-run_vscode
+command -v code || install_code_server
+command -v docker || install_docker
+command -v kind || install_kind
+command -v caddy || install_caddy
+command -v kubectl || install_kubectl
+command -v helm || install_helm
 config_user
+sudo systemctl is-active --quiet code-serve-web@$USERNAME || run_vscode
+docker inspect secondkind-control-plane || run_kind
 create_ingress
-clone_repo
+ls /home/$USERNAME/cka || clone_repo
