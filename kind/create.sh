@@ -31,8 +31,8 @@ Architectures: amd64,arm64,armhf
 Signed-By: /usr/share/keyrings/microsoft.gpg
 EOF
 
-    sudo apt update
-    sudo apt install code -y # or code-insiders
+    sudo apt-get update
+    sudo apt-get install code -y # or code-insiders
 }
 
 install_docker(){
@@ -62,8 +62,6 @@ install_kind(){
 }
 
 install_caddy(){
-    echo "Creating Caddy config"
-    echo -e "$URL {\n\tbind ${LOCAL_IP_ADDRESS}\n\treverse_proxy 127.0.0.1:8080\n}" | sudo tee /etc/caddy/Caddyfile
 
     echo "Installing Caddy on ${LOCAL_IP_ADDRESS} for https://${URL}"
 
@@ -71,8 +69,11 @@ install_caddy(){
     curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     chmod o+r /usr/share/keyrings/caddy-stable-archive-keyring.gpg
     chmod o+r /etc/apt/sources.list.d/caddy-stable.list
-    sudo apt update
-    sudo apt install caddy -y
+    sudo apt-get update
+    sudo apt-get install caddy -y
+
+    echo "Creating Caddy config"
+    echo -e "$URL {\n\tbind ${LOCAL_IP_ADDRESS}\n\treverse_proxy 127.0.0.1:8080\n}" | sudo tee /etc/caddy/Caddyfile
     sudo systemctl reload caddy
     sudo systemctl restart caddy
 }
