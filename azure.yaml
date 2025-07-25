@@ -6,3 +6,9 @@ hooks:
     run: ./scripts/prepare.sh
     interactive: true
     shell: sh
+  postup:
+    run: ./scripts/postup.sh
+    interactive: true
+    shell: sh
+
+

@@ -147,9 +147,22 @@ EOF
   # code serve-web --host 127.0.0.1 --port 8080 --accept-server-license-terms --connection-token $(uuidgen) --log trace 2>&1 & nohup
 }
 
+config_user(){
+    echo "Configuring user ${USERNAME}"
+    sudo usermod -aG docker $USERNAME
+    sudo su - $USERNAME
+    kind export kubeconfig --name secondkind
+}
+
 create_ingress(){
     echo "Creating ingress listening on ${SECONDARY_IP_ADDRESS}"
     kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+}
+
+clone_repo(){
+    echo "Cloning repository"
+    cd /home/$USERNAME
+    sudo -u $USERNAME git clone https://github.com/jmservera/cka
 }
 
 prepare_install
@@ -161,4 +174,6 @@ install_kubectl
 install_helm
 run_kind
 run_vscode
+config_user
 create_ingress
+clone_repo

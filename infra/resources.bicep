@@ -323,3 +323,7 @@ resource deploymentscript 'Microsoft.Compute/virtualMachines/extensions@2024-07-
     }
   }
 }
+
+output vscodeFqdn string = pip_vscode_resource.properties.dnsSettings.fqdn
+output kindFqdn string = pip_cluster_resource.properties.dnsSettings.fqdn
+output adminUsername string = adminUsername
