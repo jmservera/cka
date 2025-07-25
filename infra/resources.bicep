@@ -2,7 +2,7 @@ param location string = resourceGroup().location
 param vscodeDomainNameLabel string = 'vscode'
 param clusterDomainNameLabel string = 'cluster'
 param environmentName string = resourceGroup().tags['azd-env-name'] ?? 'default-env'
-param resourceToken string = toLower(uniqueString(subscription().id, environmentName, location))
+param timeZoneId string
 @secure()
 param vscodeServerToken string
 param vmSize string = 'Standard_D8as_v5'
@@ -300,6 +300,24 @@ resource vm_resource 'Microsoft.Compute/virtualMachines@2024-11-01' = {
         enabled: true
       }
     }
+  }
+  tags: tags
+}
+
+resource autoShutdown 'Microsoft.DevTestLab/schedules@2018-09-15' = {
+  name: 'shutdown-computevm-${vm_name}'
+  location: location
+  properties: {
+    status: 'Enabled'
+    taskType: 'ComputeVmShutdownTask'
+    dailyRecurrence: {
+      time: '1900'
+    }
+    timeZoneId: timeZoneId
+    notificationSettings: {
+      status: 'Disabled'
+    }
+    targetResourceId: vm_resource.id
   }
   tags: tags
 }

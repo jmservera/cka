@@ -1,6 +1,6 @@
 #!/bin/bash
 
-URL=${URL:-"locaLhost"}
+URL=${URL:-"localhost"}
 LOCAL_IP_ADDRESS=${LOCAL_IP_ADDRESS:-"10.0.0.4"}
 SECONDARY_IP_ADDRESS=${SECONDARY_IP_ADDRESS:-"10.0.1.4"}
 DEBIAN_FRONTEND=noninteractive

@@ -14,9 +14,12 @@ param publicKey string
 param location string
 @secure()
 param vscodeServerToken string
+@description('Domain name label for the VSCode server public IP address, if not provided, a default will be used.')
 param vscodeDomainNameLabel string
+@description('Domain name label for the cluster public IP address, if not provided, a default will be used.')
 param clusterDomainNameLabel string
 param vmSize string = 'Standard_D8as_v5'
+param timeZoneId string = 'UTC'
 // Optional parameters to override the default azd resource naming conventions.
 // Add the following to main.parameters.json to provide values:
 // "resourceGroupName": {
@@ -62,12 +65,12 @@ module resources './resources.bicep' = {
   params: {
     environmentName: environmentName
     location: location
-    resourceToken: resourceToken
     publicKey: publicKey
     vscodeServerToken: vscodeServerToken
     vscodeDomainNameLabel: vscodeDomainNameLabel
     clusterDomainNameLabel: clusterDomainNameLabel
     vmSize: vmSize
+    timeZoneId: timeZoneId
     tags: tags
   }
 }
