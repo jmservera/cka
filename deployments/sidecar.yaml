@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: sidecar
+  name: sidecar
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sidecar
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: sidecar
+    spec:
+      containers:
+      - command:  ['sh', '-c', 'while true; do echo test >> /var/log/sidecar/index.html && sleep 5; done']
+        image: busybox
+        name: busybox
+        volumeMounts:
+        - name: data
+          mountPath: /var/log/sidecar
+      initContainers:
+      - image: nginx
+        name: nginx-sidecar
+        restartPolicy: Always
+        volumeMounts:
+        - name: data
+          mountPath: /usr/share/nginx/html
+      volumes:
+      - name: data
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sidecar
+  labels:
+    app: sidecar
+spec:
+  ports:
+  - port: 80
+    name: web
+  clusterIP: None
+  selector:
+    app: sidecar

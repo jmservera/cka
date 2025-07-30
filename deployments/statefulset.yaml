@@ -38,6 +38,13 @@ spec:
         volumeMounts:
         - name: www
           mountPath: /usr/share/nginx/html
+      initContainers:
+      - name: init-www
+        image: busybox
+        command: ['sh', '-c', 'echo "Hello, World!" > /usr/share/nginx/html/index.html']
+        volumeMounts:
+        - name: www
+          mountPath: /usr/share/nginx/html          
   volumeClaimTemplates:
   - metadata:
       name: www
